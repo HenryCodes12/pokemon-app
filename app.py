@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, url_for
+from flask import Flask, render_template, request, jsonify, url_for, redirect
 import requests
 from PIL import Image
 import io
@@ -9,6 +9,8 @@ import random
 
 
 app = Flask(__name__)
+
+POKEMON_API_URL = "https://pokeapi.co/api/v2/pokemon/"
 
 # Function to fetch all Pokémon and organize by type
 def fetch_pokemon_glossary():
@@ -76,6 +78,19 @@ def get_quiz_questions():
 @app.route("/")
 def homepage():
     return render_template("home.html")
+
+@app.route("/random")
+def random_pokemon():
+    random_id = random.randint(1, 898)  # Pokémon IDs range from 1 to 898 
+    return redirect(url_for("pokemon_details", name=random_id))
+
+@app.route("/pokemon/<name>")
+def pokemon_details(name):
+    response = requests.get(f"{POKEMON_API_URL}{name.lower()}")
+    if response.status_code == 200:
+        pokemon = response.json()
+        return render_template("pokemon_details.html", pokemon=pokemon)
+    return "Pokémon not found", 404
 
 @app.route("/pokedex")
 def pokedex():
@@ -213,5 +228,4 @@ def speak():
 
 
 if __name__ == "__main__":
-    app.run()
-
+    app.run(debug=True)
