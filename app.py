@@ -81,8 +81,16 @@ def homepage():
 
 @app.route("/random")
 def random_pokemon():
-    random_id = random.randint(1, 898)  # Pokémon IDs range from 1 to 898 
-    return redirect(url_for("pokemon_details", name=random_id))
+    random_id = random.randint(1, 898)  # Get a random Pokémon ID
+    response = requests.get(f"{POKEMON_API_URL}{random_id}")  # Fetch Pokémon details
+
+    if response.status_code == 200:
+        pokemon = response.json()
+        pokemon_name = pokemon["name"]  # Extract Pokémon name
+        return redirect(url_for("pokemon_details", name=pokemon_name))
+
+    return "Pokémon not found", 404  # Handle errors just in case
+
 
 @app.route("/pokemon/<name>")
 def pokemon_details(name):
