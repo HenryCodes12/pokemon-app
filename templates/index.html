@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokédex</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f8f8f8;
+            padding: 20px;
+        }
+        #pokemon-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        #pokemon-image {
+    width: 250px; /* Adjust the size as needed */
+    height: 250px;
+    object-fit: contain; /* Ensures the image fits well */
+}
+
+        #pokemon-info {
+            word-wrap: break-word;
+            white-space: normal;
+            text-align: left;
+            margin-top: 10px;
+        }
+        #pokemon-stats {
+            text-align: left;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #ffcc00;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #ffdb4d;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pokédex</h1>
+    
+    <button onclick="location.href='/'">🏠 Home</button>
+
+    <!-- Text input instead of dropdown -->
+    <input type="text" id="pokemon-input" placeholder="Enter Pokémon name">
+    <button onclick="searchPokemon()">Search Pokémon</button>
+
+    <div id="pokemon-container">
+        <h2 id="pokemon-name"></h2>
+        <img id="pokemon-image" src="{{ url_for('static', filename='question_mark.png') }}" alt="Pokémon Image">
+        <p id="pokemon-info"></p>
+        <div id="pokemon-stats"></div>
+        <button id="speak-name">🔊 Speak Name</button>
+    </div>
+
+    <script>
+        function searchPokemon(pokemonName = null) {
+            let inputElement = document.getElementById("pokemon-input");
+    
+            // If a Pokémon name was passed, use it; otherwise, get the input field value
+            let pokemon = pokemonName ? pokemonName.trim().toLowerCase() : inputElement.value.trim().toLowerCase();
+    
+            if (!pokemon) {
+                alert("Please enter a Pokémon name!");
+                return;
+            }
+    
+            fetch("/search", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: pokemon })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data || data.error) {
+                    alert("Pokémon not found. Try another name.");
+                    return;
+                }
+    
+                // Update the Pokédex UI
+                document.getElementById("pokemon-name").innerText = data.name;
+                document.getElementById("pokemon-info").innerText = 
+                    `Type: ${data.types}\nHeight: ${data.height} m\nWeight: ${data.weight} kg\n\n${data.description}`;
+    
+                let imageElement = document.getElementById("pokemon-image");
+                imageElement.src = data.image || "/static/question_mark.png";
+                imageElement.alt = data.name + " Image";
+    
+                let statsHTML = "<strong>Stats:</strong><br>";
+                data.stats.forEach(stat => {
+                    statsHTML += `${stat}<br>`;
+                });
+                document.getElementById("pokemon-stats").innerHTML = statsHTML;
+            })
+            .catch(error => {
+                console.error("Error fetching Pokémon:", error);
+            });
+        }
+    
+        // Auto-search when coming from the glossary
+        document.addEventListener("DOMContentLoaded", function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const pokemonName = urlParams.get("name");
+    
+            if (pokemonName) {
+                searchPokemon(pokemonName);
+            }
+        });
+
+        document.getElementById("speak-name").addEventListener("click", function() {
+            let name = document.getElementById("pokemon-name").innerText;
+            if (name) {
+                let speech = new SpeechSynthesisUtterance(name);
+                speech.lang = "en-US";
+                speechSynthesis.speak(speech);
+            }
+        });
+    </script>
+</body>
+</html>
+

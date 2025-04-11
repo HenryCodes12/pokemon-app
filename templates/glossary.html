@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Glossary</title>
+</head>
+<body>
+    <h1>Pokémon Glossary</h1>
+    
+    <button id="home-btn">🏠 Home</button>
+
+    <h2>Select a Pokémon Type:</h2>
+    <ul class="glossary-list">
+        {% for type in types %}
+            <li><button class="type-btn" data-type="{{ type }}">{{ type }}</button></li>
+        {% endfor %}
+    </ul>
+
+    <script>
+        document.getElementById("home-btn").addEventListener("click", function() {
+            window.location.href = "{{ url_for('home') }}";
+        });
+
+        document.querySelectorAll(".type-btn").forEach(button => {
+            button.addEventListener("click", function() {
+                let type = this.getAttribute("data-type");
+                window.location.href = "{{ url_for('glossary_type', type='TYPE_PLACEHOLDER') }}".replace("TYPE_PLACEHOLDER", type);
+            });
+        });
+    </script>
+</body>
+</html>

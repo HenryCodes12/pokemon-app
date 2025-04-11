@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon App</title>
+</head>
+<body>
+    <div id="home-container">
+        <h1>Welcome to the Pokémon App!</h1>
+        <p>Explore the world of Pokémon with our Pokédex and more features coming soon!</p>
+        <img id="home-image" src="{{ url_for('static', filename='pokemon_banner.png') }}" alt="Pokémon Banner">
+        <br>
+        <button onclick="location.href='/pokedex'">Go to Pokédex</button>
+        <button id="glossary-btn">Pokémon Glossary</button>
+
+<script>
+    document.getElementById("glossary-btn").addEventListener("click", function() {
+        window.location.href = "{{ url_for('glossary') }}";
+    });
+</script>
+
+<button id="quiz-btn">Pokémon Quiz</button>
+
+<script>
+    document.getElementById("quiz-btn").addEventListener("click", function() {
+        window.location.href = "{{ url_for('quiz') }}";
+    });
+</script>
+
+    </div>
+</body>
+</html>

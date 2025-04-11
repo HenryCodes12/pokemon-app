@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Quiz</title>
+</head>
+<body>
+    <h1>Pokémon Quiz</h1>
+    <button id="home-btn">Home</button>
+
+    <div id="quiz-container">
+        <h2 id="question"></h2>
+        <div id="options"></div>
+        <p id="score">Score: 0</p>
+    </div>
+
+    <script>
+        let questions = [];
+        let currentQuestion = 0;
+        let score = 0;
+
+        document.getElementById("home-btn").addEventListener("click", function() {
+            window.location.href = "{{ url_for('home') }}";
+        });
+
+        function loadQuiz() {
+            fetch("/get_quiz_questions")
+                .then(response => response.json())
+                .then(data => {
+                    questions = data;
+                    showQuestion();
+                });
+        }
+
+        function showQuestion() {
+            if (currentQuestion >= questions.length) {
+                document.getElementById("quiz-container").innerHTML = `<h2>Quiz Complete!</h2><p>Final Score: ${score}/10</p>`;
+                return;
+            }
+
+            let q = questions[currentQuestion];
+            document.getElementById("question").innerText = `Which Pokémon is ${q.name}?`;
+
+            let optionsDiv = document.getElementById("options");
+            optionsDiv.innerHTML = "";
+
+            q.choices.forEach(choice => {
+                let img = document.createElement("img");
+                img.src = choice.image;
+                img.alt = choice.name;
+                img.classList.add("quiz-option");
+
+                img.onclick = function() {
+                    if (choice.name === q.name) score++;
+                    currentQuestion++;
+                    document.getElementById("score").innerText = `Score: ${score}`;
+                    showQuestion();
+                };
+
+                optionsDiv.appendChild(img);
+            });
+        }
+
+        window.onload = loadQuiz;
+    </script>
+</body>
+</html>

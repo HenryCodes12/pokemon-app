@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ type }} Pokémon</title>
+</head>
+<body>
+    <h1>{{ type }} Pokémon</h1>
+
+    <button id="back-btn">🔙 Back to Glossary</button>
+    <button id="home-btn">🏠 Home</button>
+
+    <ul class="glossary-list">
+        {% for pokemon in pokemons %}
+        <li>
+            <a href="{{ url_for('pokedex') }}?name={{ pokemon|lower }}">{{ pokemon }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <script>
+        document.getElementById("back-btn").addEventListener("click", function() {
+            window.location.href = "{{ url_for('glossary') }}";
+        });
+
+        document.getElementById("home-btn").addEventListener("click", function() {
+            window.location.href = "{{ url_for('home') }}";
+        });
+    </script>
+</body>
+</html>
