@@ -115,7 +115,15 @@
         // Auto-search when coming from the glossary
         document.addEventListener("DOMContentLoaded", function () {
             const urlParams = new URLSearchParams(window.location.search);
-            const pokemonName = urlParams.get("name");
+            let pokemonName = urlParams.get("name");
+
+            if (!pokemonName) {
+        const pathSegments = window.location.pathname.split("/");
+                if (pathSegments.length > 2 && pathSegments[1] === "pokemon") {
+                pokemonName = pathSegments[2]; // Extract name from URL
+                 }
+             }
+
     
             if (pokemonName) {
                 searchPokemon(pokemonName);
