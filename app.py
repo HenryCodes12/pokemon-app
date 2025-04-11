@@ -87,7 +87,7 @@ def random_pokemon():
     if response.status_code == 200:
         pokemon = response.json()
         pokemon_name = pokemon["name"]  # Extract Pokémon name
-        return redirect(f"/details?name={pokemon_name}")
+        return redirect(url_for("pokedex") + f"?name={pokemon_name}")
 
     return "Pokémon not found", 404  # Handle errors just in case
 
